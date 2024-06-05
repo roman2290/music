@@ -1,63 +1,51 @@
 
-CREATE TABLE if not exists Musical_genre (
-	Musical_genreid SERIAL PRIMARY KEY,
-	name_genre VARCHAR(60) NOT NULL
+CREATE table if not exists Music_genre (
+	Mgid SERIAL PRIMARY KEY,
+	name_genre VARCHAR(60) NOT null
 );
 
 CREATE TABLE if not exists List_performers (
-	List_performersid SERIAL PRIMARY KEY,
-	name_performers VARCHAR(60) NOT NULL
+	lpid SERIAL PRIMARY KEY,
+	name_performers VARCHAR(60) NOT null,
+	music_id INTEGER,
+	FOREIGN KEY(music_id) REFERENCES Music_genre(Mgid)
+); 
+
+CREATE TABLE if not exists GenerePerformers (
+	music_id INTEGER REFERENCES Music_genre(Mgid),
+	performens_id INTEGER REFERENCES List_performers(lpid),
+	CONSTRAINT pk PRIMARY KEY (music_id, performens_id)
 );
 
-CREATE TABLE if not exists Musical_genreList_performers (
-	Musical_id INTEGER REFERENCES Musical_genre(Musical_genreid),
-	List_id INTEGER REFERENCES List_performers(List_performersid),
-	PRIMARY KEY (Musical_id, List_id)
-);
-
-CREATE TABLE CollectionList_performers (
-	collectionid INTEGER REFERENCES Collection(id_collection),
-	perforid INTEGER REFERENCES List_performers(List_performersid),
-	PRIMARY KEY (collectionid, perforid)
-);
-
-CREATE TABLE if not exists Listalbum (
-	Listalbum_id integer PRIMARY KEY,
+CREATE TABLE if not exists List_album (
+	id_L_album SERIAL PRIMARY KEY,
 	name_album VARCHAR(60) NOT NULL,
-	year integere check (year > 2000)
+	L_album_year DATE check (L_album_year > '2000-01-01')
 );
 
-CREATE TABLE if not exists List_performersListalbum (
-	album_id INTEGER REFERENCES Listalbum(Listalbum_id),
-	List_id INTEGER REFERENCES List_performers(List_performersid),
-	PRIMARY KEY (album_id, List_id)
-);
-
-CREATE TABLE Tracklist (
+CREATE TABLE if not exists Track_list (
 	id_track SERIAL PRIMARY KEY,
 	name_track VARCHAR(40) NOT NULL,
-	time_duration time,
-	id_collection INTEGER REFERENCES Collection(id_collection),
-	Listalbum_id INTEGER REFERENCES Listalbum(Listalbum_id)
-);
-
-CREATE TABLE TracklistListalbum (
-	albumtrackid INTEGER REFERENCES Listalbum(Listalbum_id),
-	trackid INTEGER REFERENCES Tracklist(id_track),
-	PRIMARY KEY (albumtrackid, trackid)
-
-);
-
-CREATE TABLE if not exists TracklistCollection (
-	track_id INTEGER REFERENCES Tracklist(id_track),
-	collection_id INTEGER REFERENCES Collection(id_collection),
-	CONSTRAINT pk2 PRIMARY KEY (id_collection, id_track),
-	PRIMARY KEY (track_id, collection_id)
+	time_duration TIME not null check (time_duration < '10:00:00'),
+	t_id_collection INTEGER REFERENCES Collection(id_collection),
+	L_Listalbum_id INTEGER REFERENCES List_album(id_L_album)
 );
 
 CREATE TABLE if not exists Collection (
-	id_collection SERIAL integer PRIMARY KEY,
+	id_collection SERIAL PRIMARY KEY,
 	name_collection VARCHAR(60) NOT NULL,
-	year VARCHAR(60) NOT NULL
+	year_collection DATE
+);
+
+CREATE TABLE if not exists Performers_Album (
+	id_album_a INTEGER REFERENCES List_album(id_L_album),
+	music_id INTEGER REFERENCES List_performers(lpid),
+	PRIMARY KEY (id_album_a, music_id)
+);
+
+CREATE TABLE if not exists Track_Collection (
+	id_track_a INTEGER REFERENCES Track_list(id_track),
+	id_coll INTEGER REFERENCES Collection(id_collection),
+	constraint pk_a PRIMARY KEY (id_track_a, id_coll)
 );
 
